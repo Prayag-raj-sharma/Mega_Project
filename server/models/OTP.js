@@ -12,7 +12,7 @@ const OTPSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Number,
-        default: Date.noew(),
+        default: Date.now(),
         expires: 5*60
     }
 });
@@ -20,7 +20,7 @@ const OTPSchema = new mongoose.Schema({
 async function sendVerificationEmail(email, otp) {
     try {
         const mailResponse = mailSender(email, "For verification", otp);
-        console.log("SEnt mail", mailResponse)
+        console.log("Sent mail", mailResponse)
     }
     catch(error) {
         console.log("Error comes while sending a mail", error);

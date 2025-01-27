@@ -168,7 +168,7 @@ exports.login = async(req, res) => {
                 htmlOnly: true
             }
 
-            return res,cookie("token", token, options).status(200).json({
+            return res.cookie("token", token, options).status(200).json({
                 success: true,
                 token,
                 user,
@@ -195,7 +195,7 @@ exports.login = async(req, res) => {
 // change Password
 exports.changePassword = async(req, res) => {
     try {
-        const {email, password, changedPassword, confirmPassword} = req.body
+        const {email, changedPassword, confirmPassword} = req.body
 
         if(changedPassword != confirmPassword) {
             return res.status(400).json({
@@ -205,13 +205,25 @@ exports.changePassword = async(req, res) => {
         }
 
         const user = await User.findOne({email})
-
-        if(password != user.password) {
-            return res.status(400).json({
+        if(!user) {
+            return res.status(401).json({
                 success: false,
-                message: "Passwords did not match, Try again!!!"
+                message: "User for this email is not present"
             })
         }
+
+        const hashedChangedPassword = bycrpt.hash(changedPassword, 10);
+
+        await User.findOneAndUpdate(
+            {email: email},
+            {password: hashedChangedPassword},
+            {new: true}
+        )
+
+        return res.status(200).json({
+            success: true,
+            message: "Password is changed successfully!!!"
+        })
     }
     catch(error) {
         console.log(error)
