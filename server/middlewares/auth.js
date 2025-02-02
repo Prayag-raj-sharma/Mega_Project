@@ -1,11 +1,13 @@
 const jwt = require("jsonwebtoken")
 require("dotenv").config()
-const user = require("../models/User")
+const User = require("../models/User")
 
 // auth
 exports.auth = async(req, res, next) => {
     try {
-        const token = req.cookie.token || req.body.token || req.header("Authorisation").replace("Bearer ","");
+        const token = req.cookie.token 
+                      || req.body.token 
+                      || req.header("Authorisation").replace("Bearer ","");
 
         if(!token) {
             return res.status(401).json({
@@ -31,7 +33,7 @@ exports.auth = async(req, res, next) => {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: "Something went wrong"
+            message: "Something went wrong while validating the token"
         })
     }
 }
@@ -45,13 +47,13 @@ exports.isStudent = async(req, res, next) => {
                 message: "Protected route for student only"
             })
         }
-
+        next();
     }
     catch(error) {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: "Error: protected route for student only"
+            message: "Error: User role cannot be verified. Try again !!!"
         })
     }
 }
@@ -65,13 +67,13 @@ exports.isInstructor = async(req, res, next) => {
                 message: "Protected route for instructor only"
             })
         }
-
+        next();
     }
     catch(error) {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: "Error: protected route for instructor only"
+            message: "Error: User role cannot be verified. Try again !!!"
         })
     }
 }
@@ -85,13 +87,14 @@ exports.isAdmin = async(req, res, next) => {
                 message: "protected route for Admin only"
             })
         }
+        next();
 
     }
     catch(error) {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: "Error: protected route for Admin only"
+            message: "Error: User role cannot be verified. Try again !!!"
         })
     }
 }
